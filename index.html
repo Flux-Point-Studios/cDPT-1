@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>cDPT AI Chatbot</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Anybody:wght@400;700&display=swap');
+
+        body {
+            font-family: 'Anybody', sans-serif;
+            background-color: #fff;
+            color: #fff;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            min-height: 100vh;
+            overflow: auto;
+        }
+
+        .container {
+            max-width: 1200px;
+            width: 100%;
+            padding: 20px;
+            background-color: #fff;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+            margin-top: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .content {
+            flex: 1;
+            text-align: center;
+            width: 100%;
+        }
+
+        h1 {
+            color: #333;
+        }
+
+        h3 {
+            font-weight: normal;
+            font-style: italic;
+            color: #333;
+        }
+
+        .chat-box {
+            max-height: 600px;
+            overflow-y: auto;
+            border: 1px solid #333;
+            padding: 10px;
+            margin-bottom: 20px;
+            background-color: #333;
+            color: #fff;
+            width: 100%;
+        }
+
+        .chat-message {
+            margin-bottom: 10px;
+            padding: 10px;
+            border-radius: 5px;
+            width: fit-content;
+            max-width: 100%;
+            word-wrap: break-word;
+            white-space: pre-wrap;
+            position: relative;
+        }
+
+        .chat-message.user {
+            background-color: #777;
+            align-self: flex-end;
+            margin-left: auto;
+            text-align: right;
+        }
+
+        .chat-message.bot {
+            background-color: #555;
+            align-self: flex-start;
+            margin-right: auto;
+            text-align: left;
+        }
+
+        .input-group {
+            margin-bottom: 20px;
+            text-align: left;
+            width: 100%;
+        }
+
+        .input-group textarea {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #333;
+            border-radius: 5px;
+            resize: vertical;
+            height: auto;
+            min-height: 100px;
+            background-color: #444;
+            color: #fff;
+            overflow: auto;
+        }
+
+        .button-group {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .button {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: auto;
+            padding: 10px;
+            background-color: #007bff;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            text-align: center;
+            text-decoration: none;
+        }
+
+        .button:hover {
+            background-color: #0056b3;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        #logo {
+            max-width: 60%;
+            height: auto;
+            margin-bottom: 20px;
+            transition: opacity 0.5s ease-in-out;
+        }
+
+        .typing #logo {
+            animation: pulse 1s infinite alternate;
+        }
+
+        @keyframes pulse {
+            0% {
+                opacity: 1;
+            }
+
+            100% {
+                opacity: 0.5;
+            }
+        }
+
+        #username-prompt {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+        }
+
+        #username-box {
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            margin-bottom: 10px;
+            width: 100%;
+        }
+
+        #username-button {
+            padding: 10px 20px;
+            background-color: #28a745;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        #username-button:hover {
+            background-color: #218838;
+        }
+    </style>
+    <!-- Include marked.js for Markdown parsing -->
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+</head>
+
+<body>
+    <div class="container">
+        <div class="content">
+            <img id="logo" src="https://i.ibb.co/rsvpknc/FPS-Logo-Color-only.png" alt="Your Logo">
+            <h1>cDPT-1 AI Chatbot</h1>
+            <h3></h3>
+
+            <div id="username-prompt">
+                <input type="text" id="username-box" placeholder="Enter your username" />
+                <button id="username-button">Start Chat</button>
+            </div>
+
+            <div id="chat-container" class="hidden">
+                <div class="chat-box" id="chat-window"></div>
+                <div class="input-group">
+                    <textarea id="message-box" placeholder="Enter your message here..."></textarea>
+                </div>
+                <div class="button-group">
+                    <button class="button" onclick="sendMessage()">Send Message</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const functionURL = "https://6swz7uketclwp5wcxu7axmoifa0trklj.lambda-url.us-east-1.on.aws/";
+        let initialContactId = "";
+        let sessionId = "";  // Add sessionId here
+        let username = "";
+
+        document.getElementById("username-button").addEventListener("click", () => {
+            const usernameBox = document.getElementById("username-box");
+            username = usernameBox.value.trim();
+
+            if (username === "") return;
+
+            initialContactId = `${username}_${Date.now()}`;
+            sessionId = generateSessionId();  // Generate sessionId
+            document.getElementById("username-prompt").style.display = "none";
+            document.getElementById("chat-container").classList.remove("hidden");
+        });
+
+        document.getElementById("message-box").addEventListener("keypress", function(event) {
+            if (event.key === "Enter" && !event.shiftKey) {
+                event.preventDefault();
+                sendMessage();
+            }
+        });
+
+        function generateSessionId() {
+            return Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
+        }
+
+        async function sendMessage() {
+            const messageBox = document.getElementById("message-box");
+            const chatWindow = document.getElementById("chat-window");
+            const sendButton = document.querySelector('.button');
+
+            // Disable the send button to prevent multiple sends
+            sendButton.disabled = true;
+
+            const userMessage = messageBox.value.trim();
+            if (userMessage === "") {
+                sendButton.disabled = false; // Re-enable the button if message is empty
+                return;
+            }
+
+            // Display user message
+            const userMessageElement = document.createElement("div");
+            userMessageElement.className = "chat-message user";
+            userMessageElement.textContent = `You: ${userMessage}`;
+            chatWindow.appendChild(userMessageElement);
+
+            // Clear message box
+            messageBox.value = "";
+
+           try {
+               const response = await fetch(functionURL, {
+                   method: "POST",
+                   headers: {
+                       "Content-Type": "application/json"
+                   },
+                   body: JSON.stringify({
+                       inputTranscript: userMessage,
+                       initialContactId: initialContactId,
+                       sessionId: sessionId,  // Pass sessionId with the request
+                       username: username
+                   })
+               });
+
+               if (!response.ok) {
+                   throw new Error(`HTTP error! status: ${response.status}`);
+               }
+
+               const responseData = await response.json();
+               console.log(responseData);
+
+               if (responseData?.message) {
+                   // Display chatbot response with Markdown rendering
+                   const botMessageElement = document.createElement("div");
+                   botMessageElement.className = "chat-message bot";
+                   botMessageElement.innerHTML = marked.parse(`Bot: ${responseData.message}`);
+                   chatWindow.appendChild(botMessageElement);
+               } else {
+                   console.error("Unexpected response structure:", responseData);
+               }
+
+               // Scroll to bottom
+               chatWindow.scrollTop = chatWindow.scrollHeight;
+
+           } catch (error) {
+               console.error("Error sending message:", error);
+               const errorElement = document.createElement("div");
+               errorElement.className = "chat-message bot";
+               errorElement.textContent = "There was an error sending your message. Please try again.";
+               chatWindow.appendChild(errorElement);
+           }
+
+            // Re-enable the send button after response
+            sendButton.disabled = false;
+        }
+
+    </script>
+</body>
+
+</html>
