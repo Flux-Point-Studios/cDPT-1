@@ -1,0 +1,13 @@
+﻿################################################################################
+# This .gitignore file was automatically created by Microsoft(R) Visual Studio.
+################################################################################
+/.vs
+/.vs/cDPT-1/CopilotIndices/0.2.1653.9816
+/.vs/cDPT-1/FileContentIndex
+/.vs/slnx.sqlite
+/Materials/ProjectCatalyst_PoAs/Milestone1/Milestone1_Evidence_2024-08-01 110942.mp4
+/Materials/ProjectCatalyst_PoAs/Milestone2/Milestone-2_PoA_video_demonstrations.txt
+/Materials/ProjectCatalyst_PoAs/Milestone2/Milestone2_Evidence_Aike_Tutorial_2024-08-05 124448.mp4
+/Materials/ProjectCatalyst_PoAs/Milestone2/Milestone2_Evidence_Cardano_APIs_Tutorial_2024-08-05 124448.mp4
+/Materials/ProjectCatalyst_PoAs/Milestone3/Milestone3_Evidence_prompt_security_guardrails.mp4
+/Materials/ProjectCatalyst_PoAs/Milestone3/Milestone3_Evidence_SanitizationFunctions.png
