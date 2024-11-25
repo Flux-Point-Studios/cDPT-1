@@ -35,24 +35,20 @@ The Cardano Development AI Assistant will be developed using Anthropic’s Claud
    cd cDPT-1
    ```
 
-2. **Install Dependencies:**
-   ```sh
-   npm install
-   ```
+2. **Open the Chat Interface:**
+   Simply open the `index.html` file in your web browser to start using the chatbot interface.
 
-3. **Set Up Environment Variables:**
-   Create a `.env` file in the root directory and add the necessary environment variables for AWS Lambda and Anthropic’s Claude v3.
+3. **Using the Chatbot:**
+   - Enter your username when prompted
+   - Start chatting with the AI assistant about Cardano development
+   - The interface supports markdown formatting in responses
+   - Press Enter to send messages or use the Send Message button
 
-4. **Start the Development Server:**
-   ```sh
-   npm start
-   ```
+4. **Development and Contributions:**
+   - Make your changes in a new branch
+   - Submit a pull request for review
 
-5. **Development and Contributions:**
-   - Make your changes in a new branch.
-   - Submit a pull request for review.
-
-6. **Community and Support:**
+5. **Community and Support:**
    - Join the Community: Connect with us on [Discord](https://discord.gg/MfYUMnfrJM) for discussions and updates.
 
 Feel free to contribute and enhance this project to better serve the Cardano development community!
